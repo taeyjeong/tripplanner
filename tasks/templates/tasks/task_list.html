@@ -1,0 +1,21 @@
+<h1>To Do List</h1>
+
+<!-- Form for adding new tasks -->
+<form method="post" action="{% url 'create_task' %}">
+    {% csrf_token %}
+    <input type="text" name="title" placeholder="Enter a task" required>
+    <button type="submit">Add Task</button>
+</form>
+
+<!-- Display the list of tasks -->
+<ul>
+    {% for task in tasks %}
+        <li>
+            {{ task.title }}
+            <form method="post" action="{% url 'delete_task' task.id %}">
+                {% csrf_token %}
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+    {% endfor %}
+</ul>
