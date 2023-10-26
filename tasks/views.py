@@ -10,8 +10,14 @@ def task_list(request):
 def create_task(request):
     if request.method == 'POST':
         title = request.POST.get('title')
-        task = Task(title=title)
+        date = request.POST.get('date')
+        start_time = request.POST.get('start_time')
+        end_time = request.POST.get('end_time')
+
+        # Create a new task with the provided data
+        task = Task(title=title, date=date, start_time=start_time, end_time=end_time)
         task.save()
+
     return redirect('task_list')
 
 def delete_task(request, task_id):

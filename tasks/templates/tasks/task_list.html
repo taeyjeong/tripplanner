@@ -1,21 +1,47 @@
-<h1>To Do List</h1>
+<head>
+    <script src="https://maps.googleapis.com/maps/api/js?key=XXXXXX"></script>
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+    crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+</head>
 
-<!-- Form for adding new tasks -->
-<form method="post" action="{% url 'create_task' %}">
-    {% csrf_token %}
-    <input type="text" name="title" placeholder="Enter a task" required>
-    <button type="submit">Add Task</button>
-</form>
+<body>
+    <h1>To Do List</h1>
 
-<!-- Display the list of tasks -->
-<ul>
-    {% for task in tasks %}
-        <li>
-            {{ task.title }}
-            <form method="post" action="{% url 'delete_task' task.id %}">
-                {% csrf_token %}
-                <button type="submit">Delete</button>
-            </form>
-        </li>
-    {% endfor %}
-</ul>
+    <!-- Form for adding new tasks -->
+    <form method="post" action="{% url 'create_task' %}">
+        {% csrf_token %}
+        <input type="text" name="title" placeholder="Enter a task" required>
+
+        <input type="date" name="date" placeholder="Enter date" required>
+        <input type="time" name="start_time" placeholder="Time to start" required>
+        <input type="time" name="end_time" placeholder="End Time">
+        <button type="submit">Add Task</button>
+    </form>
+
+    <!-- Display the list of tasks -->
+    <ul>
+        {% for task in tasks %}
+            <li>
+                <strong>{{ task.title }}</strong><br>
+                {% if task.date %}
+                    Date: {{ task.date }}<br>
+                {% endif %}
+                {% if task.start_time %}
+                    Start Time: {{ task.start_time }}<br>
+                {% endif %}
+                {% if task.end_time %}
+                    End Time: {{ task.end_time }}<br>
+                {% endif %}
+                <form method="post" action="{% url 'delete_task' task.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+    {% comment %} hello {% endcomment %}
+</body>
