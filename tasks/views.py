@@ -26,5 +26,9 @@ def delete_task(request, task_id):
         task.delete()
     return redirect('task_list')
 
+def task_detail(request, task_id):
+    task = Task.objects.get(pk=task_id)
+    return render(request, 'tasks/task_detail.html', {'task': task})
+
 def hello_world(request):
     return render(request, 'tasks/hello_world.html')

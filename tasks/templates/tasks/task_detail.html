@@ -1,0 +1,27 @@
+<body>
+
+    <h1>Trip Details</h1>
+
+
+    <strong>{{ task.title }}</strong><br>
+    {% if task.date %}
+        Date: {{ task.date }}<br>
+    {% endif %}
+    {% if task.start_time %}
+        Start Time: {{ task.start_time }}<br>
+    {% endif %}
+    {% if task.end_time %}
+        End Time: {{ task.end_time }}<br>
+    {% endif %}
+
+    <a href="{% url 'task_list' %}">Back to Task List</a>
+
+    <h1>Enter More Details</h1>
+
+    <input type="text" name="title" id="autocomplete" placeholder="Enter Name" required>
+    <input type="date" name="date" placeholder="Enter date" required>
+    <input type="time" name="start_time" placeholder="Time to start" required>
+    <input type="time" name="end_time" placeholder="End Time">
+    <button type="submit">Add Task</button>
+
+</body>

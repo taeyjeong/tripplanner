@@ -17,12 +17,12 @@
 </head>
 
 <body>
-    <h1>To Do List</h1>
+    <h1>Name your trip</h1>
 
     <!-- Form for adding new tasks -->
     <form method="post" action="{% url 'create_task' %}">
         {% csrf_token %}
-        <input type="text" name="title" id="autocomplete" placeholder="Enter a task" required>
+        <input type="text" name="title" id="autocomplete" placeholder="Enter Name" required>
         <input type="date" name="date" placeholder="Enter date" required>
         <input type="time" name="start_time" placeholder="Time to start" required>
         <input type="time" name="end_time" placeholder="End Time">
@@ -33,15 +33,9 @@
     <ul>
         {% for task in tasks %}
             <li>
-                <strong>{{ task.title }}</strong><br>
+                <a href="{% url 'task_detail' task.id %}"><strong>{{ task.title }}</strong></a><br>
                 {% if task.date %}
                     Date: {{ task.date }}<br>
-                {% endif %}
-                {% if task.start_time %}
-                    Start Time: {{ task.start_time }}<br>
-                {% endif %}
-                {% if task.end_time %}
-                    End Time: {{ task.end_time }}<br>
                 {% endif %}
                 <form method="post" action="{% url 'delete_task' task.id %}">
                     {% csrf_token %}
