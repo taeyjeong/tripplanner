@@ -1,0 +1,52 @@
+<head>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgk4FwQ_wU1idbLyAESzmPfiOjrqhWAI4&libraries=places"></script>
+    <script>
+        function initAutocomplete() {
+          var input = document.getElementById('autocomplete');
+          var options = {
+            types: ['geocode'], 
+            componentRestrictions: { country: 'US' }
+          };
+      
+          var autocomplete = new google.maps.places.Autocomplete(input, options);
+        }
+      
+        google.maps.event.addDomListener(window, 'load', initAutocomplete);
+      </script>    
+        
+</head>
+
+<body>
+    <h1>Name your trip</h1>
+
+    <!-- Form for adding new tasks -->
+    <form method="post" action="{% url 'create_task' %}">
+        {% csrf_token %}
+        <input type="text" name="title" id="autocomplete" placeholder="Enter Name" required>
+        <input type="date" name="date" placeholder="Enter date" required>
+        <input type="time" name="start_time" placeholder="Time to start" required>
+        <input type="time" name="end_time" placeholder="End Time">
+        <button type="submit">Add Task</button>
+    </form>
+
+    <!-- Display the list of tasks -->
+    <ul>
+        {% for task in tasks %}
+            <li>
+                <a href="{% url 'task_detail' task.id %}"><strong>{{ task.title }}</strong></a><br>
+                {% if task.date %}
+                    Date: {{ task.date }}<br>
+                {% endif %}
+                <form method="post" action="{% url 'delete_task' task.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+        {% endfor %} 
+    </ul>
+
+    {% comment %} Button Next Page {% endcomment %}
+    <a href="{% url 'hello_world' %}" class="btn btn-primary">Next</a>
+
+
+</body>
