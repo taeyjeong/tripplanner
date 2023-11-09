@@ -1,0 +1,108 @@
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        function toggleDetails(activityId) {
+            var detailsContainer = document.getElementById("activity-details-" + activityId);
+            detailsContainer.classList.toggle("hidden");
+        }
+    </script>
+
+    <script>
+        function showOptions() {
+            var optionsContainer = document.getElementById("options-container");
+            optionsContainer.classList.toggle("hidden");
+        }
+    </script>
+
+</head>
+
+<body>
+
+    <div class="w-100 h-100 bg-white-200 flex items-center justify-center">
+        <div class="w-3/4 h-3/4 bg-white-200 p-4 rounded-lg flex flex-col items-center">
+            <div class="mt-4 mb-6"> <!--Title for the page-->
+                <strong class="text-xl">Trip Deatils</strong><br>
+            </div>
+            
+            <div class="mt-6 mb-6"> <!-- Trip info -->
+
+                <div class=".text-lg"> <!-- Main Destination -->
+                    <strong>{{ task.title }}</strong><br>
+                    {% if task.date %}
+                </div>
+
+                <div>
+                        Date: {{ task.date }}<br>
+                    {% endif %}
+                    {% if task.start_time %}
+                        Start Time: {{ task.start_time }}<br>
+                    {% endif %}
+                    {% if task.end_time %}
+                        End Time: {{ task.end_time }}<br>
+                    {% endif %}
+                </div>
+
+            </div>
+            
+            <div p class="text-blue-500 underline"></p>
+                <a href="{% url 'task_list' %}">Back to Task List</a>
+            </div>
+
+            <div class="mt-3 mb-3">  
+                <strong class="text-lg">Activities</strong><br>
+            </div>
+
+            <ul>
+                {% for activity in activities %}
+                    <li class="mt-5 mb-5">
+                        <a href="javascript:void(0)" onclick="toggleDetails({ activity.id })">
+                            {{ forloop.counter }}. {{ activity.activity }}
+                        </a>
+                        <div id="activity-details-{{ activity.id }}" class="hidden">
+                            Date: {{ activity.date }}<br>
+                            Start Time: {{ activity.start_time }}<br>
+                            End Time: {{ activity.end_time }}<br>
+                            <input type="checkbox" name="activity_completed" value="{{ activity.id }}" class="border border-black rounded p-1 m-1"
+                            {% if activity.completed %} checked {% endif %}>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div class="space-y-2">
+                <!-- Input button to show options -->
+                <button 
+                    id="show-options-button" 
+                    class="w-8 h-8 bg-blue-500 text-white text-lg rounded-full flex items-center justify-center" 
+                    onclick="showOptions()">+
+                </button>
+
+                <!-- Hidden input options (initially hidden) -->
+                <div id="options-container" class="hidden space-y-2 w-60 h-8">
+                    <strong class="text-lg">Enter more details</strong>
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <div class="w-60 border border-grey rounded p-1">
+                            <input type="text" name="activity" placeholder="Activity Name" required class="w-full h-8">
+                        </div>
+                        <div class="w-60 border border-grey rounded p-1">
+                            <input type="date" name="date" placeholder="Enter date" required class="w-full h-8">
+                        </div>
+                        <div class="w-60 border border-grey rounded p-1">
+                            <input type="time" name="start_time" placeholder="Time to start" class="w-full h-8">
+                        </div>
+                        <div class="w-60 border border-grey rounded p-1">
+                            <input type="time" name="end_time" placeholder="End Time" class="w-full h-8">
+                        </div>
+                        <button type="submit" class="w-60 h-8 bg-green-200 border border-white rounded-full p-1">Add Activity</button>
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</body>
