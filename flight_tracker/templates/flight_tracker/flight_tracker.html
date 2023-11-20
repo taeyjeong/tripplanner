@@ -1,0 +1,24 @@
+<!-- flight_tracker/templates/flight_tracker/flight_tracker.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flight Tracker</title>
+    <style>
+        .errorlist {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>Flight Tracker</h2>
+    <form method="post" action="{% url 'flight_tracker' %}">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Track Flight</button>
+    </form>
+    {% if error_message %}
+        <p>{{ error_message }}</p>
+    {% endif %}
+</body>
+</html>
