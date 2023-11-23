@@ -1,8 +1,11 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Task(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     title = models.CharField(max_length=200)
+    location = models.CharField(max_length=200, null=True, blank=True)  
     date = models.DateField(null=True, blank=True)
     start_time = models.TimeField(null=True, blank=True)
     end_time = models.TimeField(null=True, blank=True)
@@ -19,7 +22,7 @@ class Activity(models.Model):
     date = models.DateField(null=True, blank=True)
     start_time = models.TimeField(null=True, blank=True)
     end_time = models.TimeField(null=True, blank=True)
-    task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True)  # Make 'task' nullable
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.activity

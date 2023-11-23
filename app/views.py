@@ -6,9 +6,9 @@ from .models import Task, Activity
 
 
 # Create your views here.
-@login_required(login_url = 'login')
+@login_required
 def HomePage(request):
-    return render(request, 'home.html')
+    return render(request, 'task_list.html')
 
 def SignupPage(request):
     if request.method=='POST':
@@ -24,8 +24,8 @@ def SignupPage(request):
             my_user.save()
             return redirect('login')
         
-
     return render(request, 'signup.html')
+
 
 def LoginPage(request):
     if request.method == 'POST':
@@ -40,15 +40,17 @@ def LoginPage(request):
     
     return render(request, 'login.html')
 
+
 def LogoutPage(request):
     logout(request)
     return redirect('login')
 
+@login_required
 def task_list(request):
-    tasks = Task.objects.all()
+    tasks = Task.objects.filter(user=request.user)
     return render(request, 'task_list.html', {'tasks': tasks})
 
-
+@login_required
 def create_task(request):
     if request.method == 'POST':
         title = request.POST.get('title')
@@ -56,8 +58,11 @@ def create_task(request):
         start_time = request.POST.get('start_time')
         end_time = request.POST.get('end_time')
 
+        if not title or not date or not start_time or not end_time:
+            return HttpResponse("Please fill in all required fields.")
+
         # Create a new task with the provided data
-        task = Task(title=title, date=date, start_time=start_time, end_time=end_time)
+        task = Task(user=request.user, title=title, date=date, start_time=start_time, end_time=end_time)
         task.save()
 
     return redirect('task_list')
@@ -68,13 +73,8 @@ def delete_task(request, task_id):
         task.delete()
     return redirect('task_list')
 
-def task_detail(request, task_id):
-    task = Task.objects.get(pk=task_id)
-    return render(request, 'task_detail.html', {'task': task})
-
 def hello_world(request):
     return render(request, 'hello_world.html')
-
 
 def task_detail(request, task_id):
     task = Task.objects.get(id=task_id)

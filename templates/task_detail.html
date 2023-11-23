@@ -25,7 +25,7 @@
     <div class="w-100 h-100 bg-white-200 flex items-center justify-center">
         <div class="w-3/4 h-3/4 bg-white-200 p-4 rounded-lg flex flex-col items-center">
             <div class="mt-4 mb-6"> <!--Title for the page-->
-                <strong class="text-xl">Trip Deatils</strong><br>
+                <strong class="text-xl">Trip Details</strong><br>
             </div>
             
             <div class="mt-6 mb-6"> <!-- Trip info -->
@@ -59,7 +59,7 @@
             <ul>
                 {% for activity in activities %}
                     <li class="mt-5 mb-5">
-                        <a href="javascript:void(0)" onclick="toggleDetails({ activity.id })">
+                        <a href="javascript:void(0)" onclick="toggleDetails({{ activity.id }})">
                             {{ forloop.counter }}. {{ activity.activity }}
                         </a>
                         <div id="activity-details-{{ activity.id }}" class="hidden">
