@@ -1,5 +1,5 @@
 """
-URL configuration for registration project.
+URL configuration for ChatApp project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.2/topics/http/urls/
@@ -15,14 +15,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from app import views
+from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', views.SignupPage, name='signup'),
-    path('login/', views.LoginPage, name='login'),
-    path('home/', views.HomePage, name='home'),
-    path('logout/', views.LogoutPage, name='logout')
-
+	path('admin/', admin.site.urls),
+	path("", include("chat.urls")),
 ]
