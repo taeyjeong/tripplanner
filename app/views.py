@@ -3,10 +3,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Task, Activity
+from django.views import View
 
 
-# Create your views here.
-@login_required
 def HomePage(request):
     return render(request, 'task_list.html')
 
@@ -45,12 +44,12 @@ def LogoutPage(request):
     logout(request)
     return redirect('login')
 
-@login_required
+
 def task_list(request):
     tasks = Task.objects.filter(user=request.user)
     return render(request, 'task_list.html', {'tasks': tasks})
 
-@login_required
+
 def create_task(request):
     if request.method == 'POST':
         title = request.POST.get('title')
@@ -61,7 +60,6 @@ def create_task(request):
         if not title or not date or not start_time or not end_time:
             return HttpResponse("Please fill in all required fields.")
 
-        # Create a new task with the provided data
         task = Task(user=request.user, title=title, date=date, start_time=start_time, end_time=end_time)
         task.save()
 
@@ -91,3 +89,8 @@ def task_detail(request, task_id):
     activities = Activity.objects.filter(task_id=task.id)  # Use 'task_id' field to filter activities
 
     return render(request, 'task_detail.html', {'task': task, 'activities': activities})
+
+class ChatPageView(View):
+    def get(self, request):
+        # Your view logic here
+        return render(request, 'chat/chatPage.html')
