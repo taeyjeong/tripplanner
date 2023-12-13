@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,17 +8,41 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // JavaScript to toggle the visibility of the info container
-            document.getElementById('toggleInfoBtn').addEventListener('click', function () {
-                var infoContainer = document.getElementById('infoContainer');
-                infoContainer.classList.toggle('hidden');
-            });
+            const toggleInfoBtn = document.getElementById('toggleInfoBtn');
+            toggleInfoBtn.addEventListener('click', () => window.location.href = "{% url 'task_list' %}");
+
+            const infoContainer = document.getElementById('infoContainer');
+            const carouselWrapper = document.getElementById('carouselWrapper');
+            const scrollUnit = 2;
+            let scrollInterval;
+
+            toggleInfoBtn.addEventListener('click', () => infoContainer.classList.toggle('hidden'));
+
+            function scrollCarousel(direction) {
+                carouselWrapper.scrollLeft += scrollUnit * direction;
+            }
+
+            function startScrolling(direction) {
+                scrollInterval = setInterval(() => scrollCarousel(direction), 10);
+            }
+
+            function stopScrolling() {
+                clearInterval(scrollInterval);
+            }
+
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            prevBtn.addEventListener('mousedown', () => startScrolling(-1));
+            nextBtn.addEventListener('mousedown', () => startScrolling(1));
+            document.addEventListener('mouseup', stopScrolling);
         });
     </script>
 </head>
 
 <body class="bg-white-200 flex items-center justify-center">
     <div class="w-full md:w-3/4 lg:w-1/2 bg-white-200 p-4 rounded-lg flex flex-col items-center">
+        
         <div class="mt-4 mb-2">
             <strong class="text-xl">LOGO</strong><br>
         </div>
@@ -34,45 +57,59 @@
 
         <div class="space-y-2 mt-4 mb-4">
             <div class="w-full">
-                <img src="https://via.placeholder.com/300x300" alt="Image 1" class="w-30 h-60 m-2 object-cover w-full h-auto">
+                <img src="https://via.placeholder.com/300x300" alt="Image 1"
+                    class="w-30 h-60 m-2 object-cover w-full h-auto">
             </div>
         </div>
 
         <div class="flex space-x-4 mt-2">
             <div class="relative">
-                <button id="toggleInfoBtn"
-                    class="w-10 h-10 rounded-full bg-blue-500 hover:bg-red-500 text-white flex items-center justify-center">
+                <button id="toggleInfoBtn" class="w-10 h-10 rounded-full bg-blue-500 hover:bg-red-500 text-white flex items-center justify-center">
                     <span class="sr-only">Toggle Info</span>
                     <span class="text-xl">+</span>
                 </button>
-                <div id="infoContainer"
-                    class="hidden absolute top-full left-0 bg-white p-4 border border-gray-300 rounded-md">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. ...
-                </div>
             </div>
         </div>
 
         <!-- Photo Carousel -->
-        <div class="flex items-start mt-2 text-left">
+        <div class="space-y-2 mt-2 text-left">
             <div>
                 <strong class="text-lg">Recommended Trips</strong><br>
             </div>
         </div>
-        
-        <div class="w-full rounded-md p-1">
-            <div class="flex overflow-x-auto">
-                <!-- Adjusted square items (for demonstration, replace with actual images) -->
-                <img src="https://via.placeholder.com/10x30" alt="Image 1" class="w-30 h-60 m-2 object-cover">
-                <img src="https://via.placeholder.com/10x30" alt="Image 1" class="w-30 h-60 m-2 object-cover">
-                <img src="https://via.placeholder.com/10x30" alt="Image 1" class="w-30 h-60 m-2 object-cover">
-                <img src="https://via.placeholder.com/10x30" alt="Image 1" class="w-30 h-60 m-2 object-cover">
-                <img src="https://via.placeholder.com/10x30" alt="Image 1" class="w-30 h-60 m-2 object-cover">
-                <img src="https://via.placeholder.com/10x30" alt="Image 1" class="w-30 h-60 m-2 object-cover">
+
+        <div class="w-full rounded-md p-1 relative">
+            <button class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-300 p-2 rounded-full"
+                id="prevBtn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div id="carouselWrapper" class="flex overflow-hidden">
+                <img src="https://via.placeholder.com/15x30" alt="Image 1"
+                    class="carousel-item w-20 h-40 m-2 object-cover">
+                <img src="https://via.placeholder.com/15x30" alt="Image 2"
+                    class="carousel-item w-20 h-40 m-2 object-cover">
+                <img src="https://via.placeholder.com/15x30" alt="Image 3"
+                    class="carousel-item w-20 h-40 m-2 object-cover">
+                <img src="https://via.placeholder.com/15x30" alt="Image 4"
+                    class="carousel-item w-20 h-40 m-2 object-cover">
+                <img src="https://via.placeholder.com/15x30" alt="Image 5"
+                    class="carousel-item w-20 h-40 m-2 object-cover">
+                <img src="https://via.placeholder.com/15x30" alt="Image 6"
+                    class="carousel-item w-20 h-40 m-2 object-cover">
+                <img src="https://via.placeholder.com/15x30" alt="Image 7"
+                    class="carousel-item w-20 h-40 m-2 object-cover">
+                <img src="https://via.placeholder.com/15x30" alt="Image 8"
+                    class="carousel-item w-20 h-40 m-2 object-cover">
+                <img src="https://via.placeholder.com/15x30" alt="Image 9"
+                    class="carousel-item w-20 h-40 m-2 object-cover">
                 <!-- Add more images as needed -->
                 <!-- ... -->
             </div>
+            <button class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-300 p-2 rounded-full"
+                id="nextBtn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
-                
     </div>
 </body>
 
