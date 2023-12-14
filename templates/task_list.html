@@ -74,30 +74,10 @@
             </form>
         </div>
 
-        <!-- Display the list of tasks -->
-        <ul>
-            {% for task in tasks %}
-            <li class="mt-5 mb-5">
-                <div p class="text underline">
-                    </p>
-                    <a href="{% url 'task_detail' task.id %}"><strong>{{ task.title }}</strong></a><br>
-                </div>
-                {% if task.date %}
-                Date: {{ task.date }}<br>
-                {% endif %}
-                <form method="post" action="{% url 'delete_task' task.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="text-red-500 underline">Delete</button>
-                </form>
-            </li>
-            {% endfor %}
-        </ul>
-
-
         {% comment %} Button Next Page {% endcomment %}
         <div p class="text-blue-500 underline">
             </p>
-            <a href="{% url 'hello_world' %}" class="btn btn-primary"> Next Page</a>
+            <a href="{% url 'hello_world' %}" class="btn btn-primary"> Back Home</a>
         </div>
         
     </div>

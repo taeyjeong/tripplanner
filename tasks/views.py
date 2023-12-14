@@ -9,6 +9,30 @@ def task_list(request):
     tasks = Task.objects.all()
     return render(request, 'task_list.html', {'tasks': tasks})
 
+def create_task_and_show_hello_world(request):
+    if request.method == 'POST':
+        tasks = []
+        titles = request.POST.getlist('title')
+        dates = request.POST.getlist('date')
+        start_times = request.POST.getlist('start_time')
+        end_times = request.POST.getlist('end_time')
+
+        for title, date, start_time, end_time in zip(titles, dates, start_times, end_times):
+            existing_task = Task.objects.filter(title=title, date=date, start_time=start_time, end_time=end_time).first()
+
+            if not existing_task:
+                task = Task.objects.create(
+                    title=title,
+                    date=date,
+                    start_time=start_time,
+                    end_time=end_time
+                )
+                tasks.append(task)
+
+        return render(request, 'hello_world.html', {'tasks': tasks})
+    else:
+        return redirect('task_list')
+
 def create_task(request):
     if request.method == 'POST':
         Task.objects.create(
@@ -17,7 +41,7 @@ def create_task(request):
             start_time=request.POST.get('start_time'),
             end_time=request.POST.get('end_time')
         )
-    return redirect('task_list')
+    return redirect('hello_world')  
 
 def delete_task(request, task_id):
     if request.method == 'POST':
@@ -25,9 +49,8 @@ def delete_task(request, task_id):
     return redirect('task_list')
 
 def hello_world(request):
-    if request.method == 'POST':
-        return redirect('task_list')
-    return render(request, 'hello_world.html')
+    tasks = Task.objects.all()
+    return render(request, 'hello_world.html', {'tasks': tasks})
 
 def task_detail(request, task_id):
     task = Task.objects.get(id=task_id)
