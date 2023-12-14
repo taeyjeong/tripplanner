@@ -19,16 +19,17 @@
             }
         }
     </script>
+
 </head>
 <body class="bg-white-200 flex items-center justify-center">
     <div class="w-full md:w-3/4 lg:w-1/2 bg-white-200 p-4 rounded-lg flex flex-col items-center">
         
-        <div class="mt-4 mb-6">
-            <strong class="text-xl">Trip Details</strong><br>
+        <div class="mt-2 mx-6 my-auto">
+            <strong class="text-lg font-normal">Trip Details</strong><br>
         </div>
 
-        <div class="mt-6 mb-6">
-            <div class="text-lg">
+        <div class="mt-6 mb-6 flex items-center justify-center">
+            <div>
                 <strong>{{ task.title }}</strong><br>
                 {% if task.date %}
                     Date: {{ task.date }}<br>
@@ -40,6 +41,17 @@
                     End Time: {{ task.end_time }}<br>
                 {% endif %}
             </div>
+        </div>
+        
+
+
+
+        <!-- Add Options to the trip -->
+        <div class="flex justify-center mt-10 mb-1">
+            <a href="{% url 'trip_details' task_id=task.id %}" class="w-10 h-10 rounded-full bg-blue-600 hover:bg-red-500 text-white flex items-center justify-center">
+                <span class="sr-only">Toggle Info</span>
+                <span class="text-xl">+</span>
+            </a>
         </div>
 
         <div class="text-blue-500 underline">

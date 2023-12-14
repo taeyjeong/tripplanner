@@ -91,3 +91,10 @@ def add_activity(request, task_id):
             end_time=request.POST.get('end_time')
         )
     return redirect('task_detail', task_id=task_id)
+
+def trip_details(request, task_id):
+    # Retrieve any relevant data for the trip details page
+    # You can customize this based on your requirements
+    trip_data = {'example_key': 'example_value'}
+
+    return render(request, 'trip_details.html', {'trip_data': trip_data})
