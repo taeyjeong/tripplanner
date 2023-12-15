@@ -2,12 +2,16 @@ from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Task, Activity
+from .models import Task, Activity, Flight
 from django.views import View
+import requests
+from django.conf import settings
+from datetime import datetime
 
 
 def HomePage(request):
-    return render(request, 'task_list.html')
+    tasks = Task.objects.all()  # Fetch all tasks from the database
+    return render(request, 'home.html', {'tasks': tasks})
 
 def SignupPage(request):
     if request.method=='POST':
@@ -35,14 +39,14 @@ def LoginPage(request):
             login(request, user)
             return redirect('home')
         else:
-            return HttpResponse('Username or Password is incorrect')
+            return redirect('signup')
     
     return render(request, 'login.html')
 
 
 def LogoutPage(request):
     logout(request)
-    return redirect('login')
+    return redirect('signup')
 
 
 def task_list(request):
@@ -53,44 +57,67 @@ def task_list(request):
 def create_task(request):
     if request.method == 'POST':
         title = request.POST.get('title')
-        date = request.POST.get('date')
-        start_time = request.POST.get('start_time')
-        end_time = request.POST.get('end_time')
+        location = request.POST.get('location')
+        date_range_str = request.POST.get('dateRange')
 
-        if not title or not date or not start_time or not end_time:
-            return HttpResponse("Please fill in all required fields.")
-
-        task = Task(user=request.user, title=title, date=date, start_time=start_time, end_time=end_time)
+        task = Task(user=request.user, title=title, location=location, date_range=date_range_str)
         task.save()
 
-    return redirect('task_list')
+    return redirect('home')
+
 
 def delete_task(request, task_id):
     if request.method == 'POST':
         task = Task.objects.get(id=task_id)
         task.delete()
-    return redirect('task_list')
+    return redirect('home')
 
 def hello_world(request):
     return render(request, 'hello_world.html')
 
 def task_detail(request, task_id):
     task = Task.objects.get(id=task_id)
+    activities = Activity.objects.filter(task_id=task.id)
 
     if request.method == 'POST':
-        activity_name = request.POST.get('activity')
-        date = request.POST.get('date')
-        start_time = request.POST.get('start_time')
-        end_time = request.POST.get('end_time')
+        flight_number = request.POST.get('flight_number')
+        aviationstack_api_key = settings.AVIATIONSTACK_API_KEY
+        api_url = f'http://api.aviationstack.com/v1/flights?access_key={aviationstack_api_key}&flight_iata={flight_number}'
 
-        activity = Activity(activity=activity_name, date=date, start_time=start_time, end_time=end_time, task=task)
-        activity.save()
+        response = requests.get(api_url)
+        data = response.json()
 
-    activities = Activity.objects.filter(task_id=task.id)  # Use 'task_id' field to filter activities
+        if data['pagination']['total'] > 0:
+            flight_data = data['data'][0]
+
+            flight = Flight.objects.create(
+                flight_number=flight_data['flight']['iata'],
+                airline=flight_data['airline']['name'],
+                departure_airport=flight_data['departure']['iata'],
+                arrival_airport=flight_data['arrival']['iata']
+            )
+
+            return render(request, 'task_detail.html', {'task': task, 'activities': activities, 'flight': flight})
+        else:
+            error_message = 'Flight not found. Please enter a valid flight number.'
+            return render(request, 'task_detail.html', {'task': task, 'activities': activities, 'error_message': error_message})
+
+    activities = Activity.objects.filter(task_id=task.id)
 
     return render(request, 'task_detail.html', {'task': task, 'activities': activities})
 
+def add_activity(request, task_id):
+    if request.method == 'POST':
+        Activity.objects.create(
+            task_id=task_id,
+            activity=request.POST.get('activity'),
+            date=request.POST.get('date'),
+            start_time=request.POST.get('start_time'),
+            end_time=request.POST.get('end_time')
+        )
+    return redirect('task_detail', task_id=task_id)
+
 class ChatPageView(View):
     def get(self, request):
-        # Your view logic here
         return render(request, 'chat/chatPage.html')
+    
