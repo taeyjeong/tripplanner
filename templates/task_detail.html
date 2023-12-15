@@ -42,90 +42,28 @@
                 {% endif %}
             </div>
         </div>
-        
 
-
+        <div class="mt-20 mb-1">
+            <strong>Start planing your trip</strong><br>
+        </div>
 
         <!-- Add Options to the trip -->
-        <div class="flex justify-center mt-10 mb-1">
+        <div class="flex justify-center mt-1 mb-1">
             <a href="{% url 'trip_details' task_id=task.id %}" class="w-10 h-10 rounded-full bg-blue-600 hover:bg-red-500 text-white flex items-center justify-center">
                 <span class="sr-only">Toggle Info</span>
                 <span class="text-xl">+</span>
             </a>
         </div>
 
-        <div class="text-blue-500 underline">
+
+        <div class="text-blue-500 underline mt-20 mb-1">
             <a href="{% url 'hello_world' %}" class="btn btn-primary"> Back Home</a>
         </div>
 
-        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 mt-6 mb-6">
-            <button class="icon-button" onclick="toggleIconDetails('plane-details')">
-                <i class="fas fa-plane text-blue-500 text-4xl border rounded p-2 focus:outline-none"></i>
-            </button>
-
-            <div class="hidden details-container" id="plane-details">
-                <h2>Flight Tracker</h2>
-                {% if flight %}
-                    <h2>Flight Details</h2>
-                    <p>Flight Number: {{ flight.flight_number }}</p>
-                    <p>Airline: {{ flight.airline }}</p>
-                    <p>Departure Airport: {{ flight.departure_airport }}</p>
-                    <p>Arrival Airport: {{ flight.arrival_airport }}</p>
-                    <form method="post" action="{% url 'task_detail' task.id %}">
-                        {% csrf_token %}
-                        <button type="submit">Return</button>
-                    </form>
-                {% else %}
-                    <form method="post" action="{% url 'task_detail' task.id %}">
-                        {% csrf_token %}
-                        <div class="mb-4">
-                            <label for="flight_number" class="block text-sm font-medium text-gray-700">Flight Number</label>
-                            <input type="text" name="flight_number" id="flight_number" placeholder="Enter flight number" required
-                                   class="mt-1 p-2 border rounded-md w-full">
-                        </div>
-                        <button type="submit" class="bg-blue-500 text-white p-2 rounded-md">Track Flight</button>
-                    </form>
-                    {% if error_message %}
-                        <p>{{ error_message }}</p>
-                    {% endif %}
-                {% endif %}
-            </div>
-
-            <button class="icon-button" onclick="toggleIconDetails('hotel-details')">
-                <i class="fas fa-hotel text-red-500 text-4xl border rounded p-2 focus:outline-none"></i>
-            </button>
-
-            <div class="hidden details-container" id="hotel-details">
-            </div>
-
-            <button class="icon-button" onclick="toggleIconDetails('walking-details')">
-                <i class="fas fa-walking text-green-500 text-4xl border rounded p-2 focus:outline-none"></i>
-            </button>
-
-            <div class="hidden details-container" id="walking-details">
-                <strong>Enter more details</strong>
-                <form method="post" action="{% url 'add_activity' task.id %}">
-                    {% csrf_token %}
-                    <div style="margin-top: 8px;">
-                        <input type="text" name="activity" placeholder="Activity Name" required>
-                    </div>
-                    <div style="margin-top: 8px;">
-                        <input type="date" name="date" placeholder="Enter date" required>
-                    </div>
-                    <div style="margin-top: 8px;">
-                        <input type="time" name="start_time" placeholder="Time to start">
-                    </div>
-                    <div style="margin-top: 8px;">
-                        <input type="time" name="end_time" placeholder="End Time">
-                    </div>
-                    <button type="submit">Add Activity</button>
-                </form>
-            </div>
-        </div>
-
+        <!-- Options info displayed -->
         <div class="mt-6 mb-6">
-            <h2>Flight Information</h2>
             {% if flight %}
+            <h2>Flight Information</h2>
                 <p>Flight Number: {{ flight.flight_number }}</p>
                 <p>Airline: {{ flight.airline }}</p>
                 <p>Departure Airport: {{ flight.departure_airport }}</p>
@@ -137,12 +75,9 @@
             {% endif %}
         </div>
 
-        <div class="mt-4 mb-4">
-            <strong class="text-lg">Activities</strong><br>
-        </div>
-
         <ul>
             {% for activity in activities %}
+            <strong class="text-lg">Activities</strong><br>
                 <li class="mt-5 mb-5">
                     <a href="javascript:void(0)" onclick="toggleDetails({{ activity.id }})">
                         {{ forloop.counter }}. {{ activity.activity }}
