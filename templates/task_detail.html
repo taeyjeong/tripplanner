@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script>
+        function toggleDetails(activityId) {
+            var detailsContainer = document.getElementById("activity-details-" + activityId);
+            detailsContainer.classList.toggle("hidden");
+        }
+
+        function toggleIconDetails(iconName) {
+            var detailsContainer = document.getElementById(iconName);
+            if (detailsContainer) {
+                detailsContainer.classList.toggle('hidden');
+            }
+        }
+    </script>
+
+</head>
+<body class="bg-white-200 flex items-center justify-center">
+    <div class="w-full md:w-3/4 lg:w-1/2 bg-white-200 p-4 rounded-lg flex flex-col items-center">
+        
+        <div class="mt-2 mx-6 my-auto">
+            <strong class="text-lg font-normal">Trip Details</strong><br>
+        </div>
+
+        <div class="mt-6 mb-6 flex items-center justify-center">
+            <div>
+                <strong>{{ task.title }}</strong><br>
+                {% if task.date %}
+                    Date: {{ task.date }}<br>
+                {% endif %}
+                {% if task.start_time %}
+                    Start Time: {{ task.start_time }}<br>
+                {% endif %}
+                {% if task.end_time %}
+                    End Time: {{ task.end_time }}<br>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-20 mb-1">
+            <strong>Start planing your trip</strong><br>
+        </div>
+
+        <!-- Add Options to the trip -->
+        <div class="flex justify-center mt-1 mb-1">
+            <a href="{% url 'trip_details' task_id=task.id %}" class="w-10 h-10 rounded-full bg-blue-600 hover:bg-red-500 text-white flex items-center justify-center">
+                <span class="sr-only">Toggle Info</span>
+                <span class="text-xl">+</span>
+            </a>
+        </div>
+
+
+        <div class="text-blue-500 underline mt-20 mb-1">
+            <a href="{% url 'hello_world' %}" class="btn btn-primary"> Back Home</a>
+        </div>
+
+        <!-- Options info displayed -->
+        <div class="mt-6 mb-6">
+            {% if flight %}
+            <h2>Flight Information</h2>
+                <p>Flight Number: {{ flight.flight_number }}</p>
+                <p>Airline: {{ flight.airline }}</p>
+                <p>Departure Airport: {{ flight.departure_airport }}</p>
+                <p>Arrival Airport: {{ flight.arrival_airport }}</p>
+                <form method="post" action="{% url 'task_detail' task.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Return</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <ul>
+            {% for activity in activities %}
+            <strong class="text-lg">Activities</strong><br>
+                <li class="mt-5 mb-5">
+                    <a href="javascript:void(0)" onclick="toggleDetails({{ activity.id }})">
+                        {{ forloop.counter }}. {{ activity.activity }}
+                    </a>
+                    <div id="activity-details-{{ activity.id }}" class="hidden">
+                        Date: {{ activity.date }}<br>
+                        Start Time: {{ activity.start_time }}<br>
+                        End Time: {{ activity.end_time }}<br>
+                        <input type="checkbox" name="activity_completed" value="{{ activity.id }}"
+                            class="border border-black rounded p-1 m-1" {% if activity.completed %} checked {% endif %}>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

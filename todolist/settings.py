@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'tasks'
 ]
 
+AVIATIONSTACK_API_KEY = '2230386b02379ea623b7555238e73858'
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -55,7 +58,7 @@ ROOT_URLCONF = 'todolist.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

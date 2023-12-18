@@ -1,0 +1,234 @@
+<!-- trip_details.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script>
+        function toggleDetails(activityId) {
+            var detailsContainer = document.getElementById("activity-details-" + activityId);
+            detailsContainer.classList.toggle("hidden");
+        }
+
+        function toggleIconDetails(iconName) {
+            var detailsContainer = document.getElementById(iconName);
+            if (detailsContainer) {
+                detailsContainer.classList.toggle('hidden');
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-white-200 flex items-center justify-center">
+    <div class="w-full md:w-3/4 lg:w-1/2 bg-white-200 p-4 rounded-lg flex flex-col items-center">
+  
+        <!-- trip_options.html -->
+        <div>
+            <div class="mt-10 mb-10 ml-8">
+                <strong class="text-2xl">Add your plan</strong><br>
+            </div>
+            
+            <div>
+                <!-- trip_options.html -->
+                <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 mt-6 mb-6">
+                    <button class="icon-button" onclick="toggleIconDetails('plane-details')">
+                        <i class="fas fa-plane text-blue-500 text-4xl border rounded p-2 focus:outline-none"></i>
+                    </button>
+
+                    <div class="hidden details-container" id="plane-details">
+                        <h2>Flight Tracker</h2>
+                        {% if flight %}
+                            <h2>Flight Details</h2>
+                            <p>Flight Number: {{ flight.flight_number }}</p>
+                            <p>Airline: {{ flight.airline }}</p>
+                            <p>Departure Airport: {{ flight.departure_airport }}</p>
+                            <p>Arrival Airport: {{ flight.arrival_airport }}</p>
+                            <form method="post" action="{% url 'task_detail' task.id %}">
+                                {% csrf_token %}
+                                <button type="submit">Return</button>
+                            </form>
+                        {% else %}
+                            <form method="post" action="{% url 'task_detail' task.id %}">
+                                {% csrf_token %}
+                                <div class="mb-4">
+                                    <label for="flight_number" class="block text-sm font-medium text-gray-700">Flight Number</label>
+                                    <input type="text" name="flight_number" id="flight_number" placeholder="Enter flight number" required
+                                            class="mt-1 p-2 border rounded-md w-full">
+                                </div>
+                                <button type="submit" class="bg-blue-500 text-white p-2 rounded-md">Track Flight</button>
+                            </form>
+                            {% if error_message %}
+                                <p>{{ error_message }}</p>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                    <button class="icon-button" onclick="toggleIconDetails('hotel-details')">
+                        <i class="fas fa-hotel text-red-500 text-4xl border rounded p-2 focus:outline-none"></i>
+                    </button>
+
+                    <div class="hidden details-container" id="hotel-details">
+                    </div>
+
+                    <button class="icon-button" onclick="toggleIconDetails('walking-details')">
+                        <i class="fas fa-walking text-green-500 text-4xl border rounded p-2 focus:outline-none"></i>
+                    </button>
+
+                    <div class="hidden details-container" id="walking-details">
+                        <strong>Enter more details</strong>
+                        <form method="post" action="{% url 'add_activity' task_id=task.id %}">
+                            {% csrf_token %}
+                            <div style="margin-top: 8px;">
+                                <input type="text" name="activity" placeholder="Activity Name" required>
+                            </div>
+                            <div style="margin-top: 8px;">
+                                <input type="date" name="date" placeholder="Enter date" required>
+                            </div>
+                            <div style="margin-top: 8px;">
+                                <input type="time" name="start_time" placeholder="Time to start">
+                            </div>
+                            <div style="margin-top: 8px;">
+                                <input type="time" name="end_time" placeholder="End Time">
+                            </div>
+                            <button type="submit">Add Activity</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="mt-12 ml-8">
+                <div class="text-xl font-medium">Transportation</div>
+            </div>
+        
+            <button type="button"
+                class="ml-8 mt-6 relative bg-transparent border border-solid border-blue-500 rounded-full py-2 px-5 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition duration-300 ease-in-out focus:outline-none">
+                <span class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-300 h-6 w-6 rounded-full mr-2"></span>
+                <span class="flex items-center">
+                    <span class="ml-5 mr-1">Flight</span>
+                </span>
+            </button>
+            <button type="button"
+                class="ml-1 mt-6 relative bg-transparent border border-solid border-blue-500 rounded-full py-2 px-5 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition duration-300 ease-in-out focus:outline-none">
+                <span class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-300 h-6 w-6 rounded-full mr-2"></span>
+                <span class="flex items-center">
+                    <span class="ml-5 mr-1">Train</span>
+                </span>
+            </button>
+            <button type="button"
+                class="ml-1 mt-6 relative bg-transparent border border-solid border-blue-500 rounded-full py-2 px-5 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition duration-300 ease-in-out focus:outline-none">
+                <span class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-300 h-6 w-6 rounded-full mr-2"></span>
+                <span class="flex items-center">
+                    <span class="ml-5 mr-1">Ferry</span>
+                </span>
+            </button>
+            <button type="button"
+                class="ml-1 mt-6 relative bg-transparent border border-solid border-blue-500 rounded-full py-2 px-5 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition duration-300 ease-in-out focus:outline-none">
+                <span class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-300 h-6 w-6 rounded-full mr-2"></span>
+                <span class="flex items-center">
+                    <span class="ml-5 mr-1">Bus</span>
+                </span>
+            </button>
+        
+            <div class="flex">
+                <button type="button"
+                    class="ml-8 mt-4 relative bg-transparent border border-solid border-blue-500 rounded-full py-0.4 px-5 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition duration-300 ease-in-out focus:outline-none">
+                    <span
+                        class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-300 h-6 w-6 rounded-full mr-2"></span>
+                    <span class="flex flex-col items-center">
+                        <span class="text-sm">Car</span>
+                        <span class="ml-4 text-sm">Rental</span>
+                    </span>
+                </button>
+                <button type="button"
+                    class="ml-2 mt-4 relative bg-transparent border border-solid border-blue-500 rounded-full py-0.4 px-5 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition duration-300 ease-in-out focus:outline-none">
+                    <span
+                        class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-300 h-6 w-6 rounded-full mr-2"></span>
+                    <span class="flex flex-col items-center">
+                        <span class="text-sm">Private</span>
+                        <span class="ml-4 text-sm">Chauffeur</span>
+                    </span>
+                </button>
+                <button type="button"
+                    class="ml-2 mt-4 relative bg-transparent border border-solid border-blue-500 rounded-full py-2 px-5 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition duration-300 ease-in-out focus:outline-none">
+                    <span
+                        class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-300 h-6 w-6 rounded-full mr-2"></span>
+                    <span class="flex items-center">
+                        <span class="ml-5 mr-1">Cruise</span>
+                    </span>
+                </button>
+            </div>
+        
+            <div class="mt-12 ml-8">
+                <div class="text-xl font-medium">Lodging</div>
+            </div>
+        
+            <div class="flex">
+                <button type="button"
+                    class="ml-8 mt-6 relative bg-transparent border border-solid border-blue-500 rounded-full py-2 px-5 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition duration-300 ease-in-out focus:outline-none">
+                    <span
+                        class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-300 h-6 w-6 rounded-full mr-2"></span>
+                    <span class="flex items-center">
+                        <span class="ml-5 mr-1">Hotel</span>
+                    </span>
+                </button>
+                <button type="button"
+                    class="ml-2 mt-6 relative bg-transparent border border-solid border-blue-500 rounded-full py-2 px-5 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition duration-300 ease-in-out focus:outline-none">
+                    <span
+                        class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-300 h-6 w-6 rounded-full mr-2"></span>
+                    <span class="flex items-center">
+                        <span class="ml-5 mr-1">Airbnb</span>
+                    </span>
+                </button>
+                <button type="button"
+                    class="ml-2 mt-4 relative bg-transparent border border-solid border-blue-500 rounded-full py-0.4 px-5 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition duration-300 ease-in-out focus:outline-none">
+                    <span
+                        class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-300 h-6 w-6 rounded-full mr-2"></span>
+                    <span class="flex flex-col items-center">
+                        <span class="ml-2 text-sm">Camp</span>
+                        <span class="ml-4 text-sm">Ground</span>
+                    </span>
+                </button>
+            </div>
+        
+            <div class="mt-12 ml-8">
+                <div class="text-xl font-medium">Activities</div>
+            </div>
+        
+            <button type="button"
+                class="ml-8 mt-6 relative bg-transparent border border-solid border-blue-500 rounded-full py-2 px-5 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition duration-300 ease-in-out focus:outline-none">
+                <span class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-300 h-6 w-6 rounded-full mr-2"></span>
+                <span class="flex items-center">
+                    <span class="ml-5 mr-1">Conventions</span>
+                </span>
+            </button>
+            <button type="button"
+                class="ml-1 mt-6 relative bg-transparent border border-solid border-blue-500 rounded-full py-2 px-5 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition duration-300 ease-in-out focus:outline-none">
+                <span class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-300 h-6 w-6 rounded-full mr-2"></span>
+                <span class="flex items-center">
+                    <span class="ml-5 mr-1">Sports</span>
+                </span>
+            </button>
+            <button type="button"
+                class="ml-1 mt-6 relative bg-transparent border border-solid border-blue-500 rounded-full py-2 px-5 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition duration-300 ease-in-out focus:outline-none">
+                <span class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-300 h-6 w-6 rounded-full mr-2"></span>
+                <span class="flex items-center">
+                    <span class="ml-5 mr-1">Restaurant</span>
+                </span>
+            </button>
+            <button type="button"
+                class="ml-8 mt-4 relative bg-transparent border border-solid border-blue-500 rounded-full py-2 px-5 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition duration-300 ease-in-out focus:outline-none">
+                <span class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-300 h-6 w-6 rounded-full mr-2"></span>
+                <span class="flex items-center">
+                    <span class="ml-5 mr-1">Concerts</span>
+                </span>
+            </button>
+        </div>
+    </div>
+    
+</body>
+
+</html>
