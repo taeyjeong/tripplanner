@@ -53,6 +53,27 @@ def task_list(request):
     tasks = Task.objects.filter(user=request.user)
     return render(request, 'task_list.html', {'tasks': tasks})
 
+def create_task_and_show_hello_world(request):
+    if request.method == 'POST':
+        tasks = []
+        title = request.POST.get('title')
+        location = request.POST.get('location')
+        date_range_str = request.POST.get('dateRange')
+
+        for title, location, date_range_str in zip(title, location, date_range_str):
+            existing_task = Task.objects.filter(title=title,location=location,date_range_str=date_range_str).first()
+
+            if not existing_task:
+                task = Task.objects.create(
+                    title=title,
+                    location=location,
+                    date_range_str=date_range_str,
+                )
+                tasks.append(task)
+
+        return render(request, 'home.html', {'tasks': tasks})
+    else:
+        return redirect('task_list')
 
 def create_task(request):
     if request.method == 'POST':
