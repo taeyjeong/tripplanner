@@ -138,6 +138,19 @@ def add_activity(request, task_id):
         )
     return redirect('task_detail', task_id=task_id)
 
+def trip_options(request, task_id):
+    # Assuming you have some logic here to retrieve or calculate trip_data
+    trip_data = ...  # Your logic to get or calculate trip_data
+
+    try:
+        task = Task.objects.get(id=task_id)
+    except Task.DoesNotExist:
+        # Handle the case where the task with the given id is not found
+        return HttpResponse("Task not found", status=404)
+
+    context = {'trip_data': trip_data, 'task': task}
+    return render(request, 'trip_options.html', context)
+
 class ChatPageView(View):
     def get(self, request):
         return render(request, 'chat/chatPage.html')
