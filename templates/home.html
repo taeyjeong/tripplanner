@@ -80,6 +80,7 @@
     {% if request.user.is_authenticated %}
     <a href="{% url 'login' %}" class="text-black">Logout</a>
     {% endif %}
+
     <div class="max-w-screen-md mx-auto bg-white-200 border p-2">
         <!-- Logo -->
         <div class="text-center">
@@ -96,20 +97,22 @@
         </div>
 
         <!-- Trips menu -->
-        {% if not tasks %}
-        <div class="mt-8 mb-4 mx-6 my-auto" id="imageContainer">
-            <img src="https://via.placeholder.com/300x300" alt="Image 1" class="w-full h-auto object-cover">
-        </div>
-        {% endif %}
-
         <div>
-            {% if tasks is not None and tasks %}
+            
+            {% if not tasks %}
+            <div class="mt-8 mb-4 mx-6 my-auto" id="imageContainer">
+                <img src="https://via.placeholder.com/300x300" alt="Image 1" class="w-full h-auto object-cover">
+            </div>
+            {% endif %}
+
+        
             <!-- Task List -->
+            {% if tasks is not None and tasks %}
             <div class="mx-3 my-auto rounded p-4 pl-4">
                 <strong class="text-lg font-normal">Upcoming Trips</strong>
                 <ul>
                     {% for task in tasks %}
-                    <li class="mt-5 mb-5">
+                    <li class="mt-2 mb-5 border grey rounded-md p-auto shadow-md p-3 pl-5">
                         <div class="text underline">
                             <a href="{% url 'task_detail' task.id %}"><strong>{{ task.title }}</strong></a><br>
                         </div>

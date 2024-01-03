@@ -7,9 +7,10 @@
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgk4FwQ_wU1idbLyAESzmPfiOjrqhWAI4&libraries=places"></script>
 </head>
 
-<body>
-    <div class="w-100 h-100 bg-white-200 flex items-center justify-center">
-        <div class="w-4/5 h-3/4 bg-white p-4 rounded-lg flex flex-col items-center">
+<body class="mx-auto my-auto">
+    <div class="max-w-screen-md mx-auto flex items-center justify-center">
+        <div class="w-full md:w-3/4 lg:w-1/2 bg-white-200 p-4 rounded-lg flex flex-col items-center">
+
             <div class="mt-6 mb-10">
                 <strong class="text-xl">Plan a new trip</strong><br>
             </div>
@@ -17,28 +18,28 @@
             <div class="flex items-center space-x-12 mt-3">
                 <div class="transform -translate-x-19 -translate-y-6 bg-black w-28 h-28 rounded-full"></div>
 
-                <div>
-                    <p class="text-base">asdasdasdasdasdasdasdassdds</p>
+                <div class="w-64 h-40 border border-black p-4">
+                    <p class="text-base">"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
                 </div>
             </div>
 
-            <div class="space-y-4">
+            <div class="space-y-2 mt-6 mb-6">
                 <form method="post" action="{% url 'create_task' %}" id="form">
                     {% csrf_token %}
-                    <div class="mb-4">
+                    <div class="mb-2">
                         <input type="text" name="title" placeholder="Trip name" required
-                            class="w-96 h-12 border border-grey rounded p-2">
+                            class="w-96 h-10 border border-grey rounded p-1">
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-2">
                         <input type="text" name="location" id="autocomplete" placeholder="Where to?" required
-                            class="w-96 h-12 border border-grey rounded p-2">
+                        class="w-96 h-10 border border-grey rounded p-1">
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-2">
                         <input type="text" id="dateRange" name="dateRange"
-                            class="w-96 h-12 border border-grey rounded p-2" placeholder="Start date and End date">
+                        class="w-96 h-10 border border-grey rounded p-1" placeholder="Start date and End date">
                     </div>
                     <br>
-                    <span class="text-gray-500">Number of Travelers</span>
+                    <span class="text-black-500">Number of Travelers</span>
                     <br>
                     <br>
                     <button type="button"
