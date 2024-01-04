@@ -2,15 +2,23 @@ from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Task, Activity, Flight
+from .models import Task, Activity, Flight, Invitation
 from django.views import View
 import requests
 from django.conf import settings
 from datetime import datetime
+from django.db.models import Q
+from django.http import HttpResponse, HttpResponseServerError
 
 
 def HomePage(request):
-    tasks = Task.objects.all()  # Fetch all tasks from the database
+    # Get tasks created by the user
+    user_tasks = Task.objects.filter(user=request.user)
+    # Get tasks where the user is invited
+    invited_tasks = Invitation.objects.filter(receiver=request.user).values_list('task', flat=True)
+    # Combine user's tasks and invited tasks
+    tasks = Task.objects.filter(Q(id__in=user_tasks) | Q(id__in=invited_tasks))
+
     return render(request, 'home.html', {'tasks': tasks})
 
 def SignupPage(request):
@@ -48,33 +56,12 @@ def LogoutPage(request):
     logout(request)
     return redirect('signup')
 
-
+@login_required
 def task_list(request):
     tasks = Task.objects.filter(user=request.user)
     return render(request, 'task_list.html', {'tasks': tasks})
 
-"""def create_task_and_show_hello_world(request):
-    if request.method == 'POST':
-        tasks = []
-        title = request.POST.get('title')
-        location = request.POST.get('location')
-        date_range_str = request.POST.get('dateRange')
-
-        for title, location, date_range_str in zip(title, location, date_range_str):
-            existing_task = Task.objects.filter(title=title,location=location,date_range_str=date_range_str).first()
-
-            if not existing_task:
-                task = Task.objects.create(
-                    title=title,
-                    location=location,
-                    date_range_str=date_range_str,
-                )
-                tasks.append(task)
-
-        return render(request, 'home.html', {'tasks': tasks})
-    else:
-        return redirect('task_list')"""
-        
+@login_required
 def create_task(request):
     if request.method == 'POST':
         title = request.POST.get('title')
@@ -139,17 +126,31 @@ def add_activity(request, task_id):
     return redirect('task_detail', task_id=task_id)
 
 def trip_options(request, task_id):
-    # Assuming you have some logic here to retrieve or calculate trip_data
-    trip_data = ...  # Your logic to get or calculate trip_data
+    trip_data = ... 
 
     try:
         task = Task.objects.get(id=task_id)
     except Task.DoesNotExist:
-        # Handle the case where the task with the given id is not found
         return HttpResponse("Task not found", status=404)
 
     context = {'trip_data': trip_data, 'task': task}
     return render(request, 'trip_options.html', context)
+
+@login_required
+def invite_user(request, task_id, username):
+    try:
+        task = Task.objects.get(id=task_id)
+        receiver = User.objects.get(username=username)
+    except Task.DoesNotExist:
+        return HttpResponse("Task not found", status=404)
+    except User.DoesNotExist as e:
+        print(f"User not found: {e}")
+        return HttpResponseServerError("Internal server error", status=500)
+
+    if request.user == task.user:
+        invitation, created = Invitation.objects.get_or_create(sender=request.user, receiver=receiver, task=task)
+
+    return redirect('home')
 
 class ChatPageView(View):
     def get(self, request):
