@@ -141,6 +141,14 @@
                             <button type="submit" class="text-red-500 underline">Delete</button>
                         </form>
 
+                        {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                                {% endfor %}
+                        </ul>
+                        {% endif %}
+
                         <!-- Invite Modal -->
                         <div id="inviteModal{{ task.id }}" class="fixed z-10 inset-0 overflow-y-auto hidden">
                             <div

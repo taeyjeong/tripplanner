@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -6,17 +6,15 @@ from .models import Task, Activity, Flight, Invitation
 from django.views import View
 import requests
 from django.conf import settings
-from datetime import datetime
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseServerError
+from django.http import HttpResponse
+from django.contrib import messages
 
 
 def HomePage(request):
-    # Get tasks created by the user
     user_tasks = Task.objects.filter(user=request.user)
-    # Get tasks where the user is invited
     invited_tasks = Invitation.objects.filter(receiver=request.user).values_list('task', flat=True)
-    # Combine user's tasks and invited tasks
+
     tasks = Task.objects.filter(Q(id__in=user_tasks) | Q(id__in=invited_tasks))
 
     return render(request, 'home.html', {'tasks': tasks})
@@ -73,11 +71,15 @@ def create_task(request):
 
     return redirect('home')
 
-
 def delete_task(request, task_id):
-    if request.method == 'POST':
-        task = Task.objects.get(id=task_id)
-        task.delete()
+    task = get_object_or_404(Task, id=task_id)
+
+    # Check if the user is the owner of the task
+    if task.user != request.user:
+        messages.error(request, "You don't have permission to delete this task.")
+        return redirect('home')
+
+    task.delete()
     return redirect('home')
 
 def hello_world(request):
@@ -136,21 +138,20 @@ def trip_options(request, task_id):
     context = {'trip_data': trip_data, 'task': task}
     return render(request, 'trip_options.html', context)
 
-@login_required
 def invite_user(request, task_id, username):
-    try:
-        task = Task.objects.get(id=task_id)
-        receiver = User.objects.get(username=username)
-    except Task.DoesNotExist:
-        return HttpResponse("Task not found", status=404)
-    except User.DoesNotExist as e:
-        print(f"User not found: {e}")
-        return HttpResponseServerError("Internal server error", status=500)
+    task = get_object_or_404(Task, id=task_id)
+    
+    if request.method == 'POST':
+        invite_username = request.POST.get('inviteUsername')
+        receiver_user = User.objects.filter(username=invite_username).first()
 
-    if request.user == task.user:
-        invitation, created = Invitation.objects.get_or_create(sender=request.user, receiver=receiver, task=task)
+        invitation = Invitation(sender=request.user, receiver=receiver_user, task=task)
+        invitation.save()
 
-    return redirect('home')
+        messages.success(request, f'Invitation sent to {receiver_user.username}.')
+        return redirect('home') 
+
+    return render(request, 'home.html', {'task': task})
 
 class ChatPageView(View):
     def get(self, request):
