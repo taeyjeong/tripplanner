@@ -48,7 +48,7 @@
         </div>
 
         <!-- Add Options to the trip -->
-        <div class="flex justify-center mt-1 mb-1">
+        <div class="flex justify-center mt-4 mb-1">
             <a href="{% url 'trip_options' task_id=task.id %}" class="w-10 h-10 rounded-full bg-blue-600 hover:bg-red-500 text-white flex items-center justify-center">
                 <span class="sr-only">Toggle Info</span>
                 <span class="text-xl">+</span>
@@ -56,42 +56,47 @@
         </div>
 
 
-        <div class="text-blue-500 underline mt-20 mb-1">
+        <div class="text-blue-500 underline mt-20 mb-5">
             <a href="{% url 'home' %}" class="btn btn-primary"> Back Home</a>
         </div>
 
         <!-- Options info displayed -->
-        <div class="mt-6 mb-6">
-            {% if flight %}
-            <h2>Flight Information</h2>
-                <p>Flight Number: {{ flight.flight_number }}</p>
-                <p>Airline: {{ flight.airline }}</p>
-                <p>Departure Airport: {{ flight.departure_airport }}</p>
-                <p>Arrival Airport: {{ flight.arrival_airport }}</p>
-                <form method="post" action="{% url 'task_detail' task.id %}">
-                    {% csrf_token %}
-                    <button type="submit">Return</button>
-                </form>
-            {% endif %}
+        <strong class="text-lg">Activities</strong><br>
+        
+        <div class="mx-3 my-auto rounded p-4 pl-4">
+            <ul>
+                {% for activity in activities %}
+                    <li class="mt-1 mb-5 border grey rounded-md p-auto shadow-md p-2 pl-4">
+                        <a href="javascript:void(0)" onclick="toggleDetails({{ activity.id }})">
+                            {{ forloop.counter }}. {{ activity.activity }}
+                        </a>
+                        <div id="activity-details-{{ activity.id }}" class="hidden">
+                            Date: {{ activity.date }}<br>
+                            Start Time: {{ activity.start_time }}<br>
+                            End Time: {{ activity.end_time }}<br>
+                            <input type="checkbox" name="activity_completed" value="{{ activity.id }}"
+                                class="border border-black rounded p-1 m-1" {% if activity.completed %} checked {% endif %}>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div>
+                {% if flight %}
+                <h2>Flight Information</h2>
+                    <p>Flight Number: {{ flight.flight_number }}</p>
+                    <p>Airline: {{ flight.airline }}</p>
+                    <p>Departure Airport: {{ flight.departure_airport }}</p>
+                    <p>Arrival Airport: {{ flight.arrival_airport }}</p>
+                    
+                    <form method="post" action="{% url 'task_detail' task.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Return</button>
+                    </form>
+                {% endif %}
+            </div>
         </div>
 
-        <ul>
-            <strong class="text-lg">Activities</strong><br>
-            {% for activity in activities %}
-                <li class="mt-5 mb-5">
-                    <a href="javascript:void(0)" onclick="toggleDetails({{ activity.id }})">
-                        {{ forloop.counter }}. {{ activity.activity }}
-                    </a>
-                    <div id="activity-details-{{ activity.id }}" class="hidden">
-                        Date: {{ activity.date }}<br>
-                        Start Time: {{ activity.start_time }}<br>
-                        End Time: {{ activity.end_time }}<br>
-                        <input type="checkbox" name="activity_completed" value="{{ activity.id }}"
-                            class="border border-black rounded p-1 m-1" {% if activity.completed %} checked {% endif %}>
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
     </div>
 </body>
 </html>

@@ -53,27 +53,6 @@ def task_list(request):
     tasks = Task.objects.filter(user=request.user)
     return render(request, 'task_list.html', {'tasks': tasks})
 
-"""def create_task_and_show_hello_world(request):
-    if request.method == 'POST':
-        tasks = []
-        title = request.POST.get('title')
-        location = request.POST.get('location')
-        date_range_str = request.POST.get('dateRange')
-
-        for title, location, date_range_str in zip(title, location, date_range_str):
-            existing_task = Task.objects.filter(title=title,location=location,date_range_str=date_range_str).first()
-
-            if not existing_task:
-                task = Task.objects.create(
-                    title=title,
-                    location=location,
-                    date_range_str=date_range_str,
-                )
-                tasks.append(task)
-
-        return render(request, 'home.html', {'tasks': tasks})
-    else:
-        return redirect('task_list')"""
         
 def create_task(request):
     if request.method == 'POST':
@@ -97,8 +76,13 @@ def hello_world(request):
     return render(request, 'hello_world.html')
 
 def task_detail(request, task_id):
-    task = Task.objects.get(id=task_id)
-    activities = Activity.objects.filter(task_id=task.id)
+    try:
+        task = Task.objects.get(id=task_id)
+    except Task.DoesNotExist:
+        # Handle the case where the task does not exist
+        return HttpResponse("Task not found", status=404)
+
+    activities = Activity.objects.filter(task_id=task.id).order_by('date', 'start_time')
 
     if request.method == 'POST':
         flight_number = request.POST.get('flight_number')
@@ -111,6 +95,7 @@ def task_detail(request, task_id):
         if data['pagination']['total'] > 0:
             flight_data = data['data'][0]
 
+            # Create and save Flight object
             flight = Flight.objects.create(
                 flight_number=flight_data['flight']['iata'],
                 airline=flight_data['airline']['name'],
@@ -118,12 +103,20 @@ def task_detail(request, task_id):
                 arrival_airport=flight_data['arrival']['iata']
             )
 
+            # Create and save Activity object for tracking the flight
+            Activity.objects.create(
+                task_id=task.id,
+                activity=f"Tracked Flight {flight.flight_number}",
+                date=flight_data['departure']['estimated'].split('T')[0],  # Extract YYYY-MM-DD
+                start_time=flight_data['departure']['estimated'].split('T')[1],  # Extract HH:MM:SS
+                end_time=flight_data['arrival']['estimated'].split('T')[1]  # Extract HH:MM:SS
+            )
+
+
             return render(request, 'task_detail.html', {'task': task, 'activities': activities, 'flight': flight})
         else:
             error_message = 'Flight not found. Please enter a valid flight number.'
             return render(request, 'task_detail.html', {'task': task, 'activities': activities, 'error_message': error_message})
-
-    activities = Activity.objects.filter(task_id=task.id)
 
     return render(request, 'task_detail.html', {'task': task, 'activities': activities})
 
@@ -136,16 +129,16 @@ def add_activity(request, task_id):
             start_time=request.POST.get('start_time'),
             end_time=request.POST.get('end_time')
         )
+
+    # Redirect to task_detail after adding activity and use task_id in the URL
     return redirect('task_detail', task_id=task_id)
 
 def trip_options(request, task_id):
-    # Assuming you have some logic here to retrieve or calculate trip_data
     trip_data = ...  # Your logic to get or calculate trip_data
 
     try:
         task = Task.objects.get(id=task_id)
     except Task.DoesNotExist:
-        # Handle the case where the task with the given id is not found
         return HttpResponse("Task not found", status=404)
 
     context = {'trip_data': trip_data, 'task': task}
