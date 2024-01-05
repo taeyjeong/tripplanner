@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'daphne',
     'django.contrib.staticfiles',
-    'registration',
+    'registration'
 ]
 
 AVIATIONSTACK_API_KEY = '2230386b02379ea623b7555238e73858'
@@ -129,5 +129,3 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-LOGIN_REDIRECT_URL = "chat-page"

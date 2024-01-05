@@ -1,16 +1,22 @@
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Task, Activity, Flight
+from .models import Task, Activity, Flight, Invitation
 from django.views import View
 import requests
 from django.conf import settings
-from datetime import datetime
+from django.db.models import Q
+from django.http import HttpResponse
+from django.contrib import messages
 
 
 def HomePage(request):
-    tasks = Task.objects.all()  # Fetch all tasks from the database
+    user_tasks = Task.objects.filter(user=request.user)
+    invited_tasks = Invitation.objects.filter(receiver=request.user).values_list('task', flat=True)
+
+    tasks = Task.objects.filter(Q(id__in=user_tasks) | Q(id__in=invited_tasks))
+
     return render(request, 'home.html', {'tasks': tasks})
 
 def SignupPage(request):
@@ -48,7 +54,7 @@ def LogoutPage(request):
     logout(request)
     return redirect('signup')
 
-
+@login_required
 def task_list(request):
     tasks = Task.objects.filter(user=request.user)
     return render(request, 'task_list.html', {'tasks': tasks})
@@ -65,11 +71,15 @@ def create_task(request):
 
     return redirect('home')
 
-
 def delete_task(request, task_id):
-    if request.method == 'POST':
-        task = Task.objects.get(id=task_id)
-        task.delete()
+    task = get_object_or_404(Task, id=task_id)
+
+    # Check if the user is the owner of the task
+    if task.user != request.user:
+        messages.error(request, "You don't have permission to delete this task.")
+        return redirect('home')
+
+    task.delete()
     return redirect('home')
 
 def hello_world(request):
@@ -134,6 +144,7 @@ def add_activity(request, task_id):
     return redirect('task_detail', task_id=task_id)
 
 def trip_options(request, task_id):
+    # Assuming you have some logic here to retrieve or calculate trip_data
     trip_data = ...  # Your logic to get or calculate trip_data
 
     try:
@@ -143,6 +154,29 @@ def trip_options(request, task_id):
 
     context = {'trip_data': trip_data, 'task': task}
     return render(request, 'trip_options.html', context)
+
+def invite_user(request, task_id, username):
+    task = get_object_or_404(Task, id=task_id)
+    
+    if request.method == 'POST':
+        invite_username = request.POST.get('inviteUsername')
+        receiver_user = User.objects.filter(username=invite_username).first()
+
+        if receiver_user is None:
+            messages.error(request, 'User not found with the given username.')
+            return redirect('home') 
+
+        if receiver_user == request.user:
+            messages.error(request, 'You cannot invite yourself to your own task.')
+            return redirect('home') 
+
+        invitation = Invitation(sender=request.user, receiver=receiver_user, task=task)
+        invitation.save()
+
+        messages.success(request, f'Invitation sent to {receiver_user.username}.')
+        return redirect('home') 
+
+    return render(request, 'home.html', {'task': task})
 
 class ChatPageView(View):
     def get(self, request):
