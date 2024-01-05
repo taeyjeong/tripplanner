@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const toggleInfoBtn = document.getElementById('toggleInfoBtn');
@@ -77,8 +78,6 @@
             document.getElementById('inviteModal' + taskId).classList.add('hidden');
         }
     </script>
-
-
 </head>
 
 <body class="mx-auto my-auto">
@@ -142,11 +141,20 @@
                         </form>
 
                         {% if messages %}
-                        <ul class="messages">
-                            {% for message in messages %}
-                            <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                            <div class="messages">
+                                {% for message in messages %}
+                                    <div class="alert{% if message.tags %} {{ message.tags }}{% endif %}">
+                                        {{ message }}
+                                    </div>
                                 {% endfor %}
-                        </ul>
+                            </div>
+
+                            <script>
+                                // Fade out messages after 3 seconds
+                                $(document).ready(function () {
+                                    $('.messages .alert').delay(3000).fadeOut(500);
+                                });
+                            </script>
                         {% endif %}
 
                         <!-- Invite Modal -->

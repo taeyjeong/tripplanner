@@ -145,6 +145,14 @@ def invite_user(request, task_id, username):
         invite_username = request.POST.get('inviteUsername')
         receiver_user = User.objects.filter(username=invite_username).first()
 
+        if receiver_user is None:
+            messages.error(request, 'User not found with the given username.')
+            return redirect('home') 
+
+        if receiver_user == request.user:
+            messages.error(request, 'You cannot invite yourself to your own task.')
+            return redirect('home') 
+
         invitation = Invitation(sender=request.user, receiver=receiver_user, task=task)
         invitation.save()
 
