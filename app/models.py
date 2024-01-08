@@ -7,6 +7,10 @@ class Task(models.Model):
     location = models.CharField(max_length=255)
     date_range = models.CharField(max_length=20, blank=True, null=True)
     invited_users = models.ManyToManyField(User, related_name='invited_tasks', blank=True)
+    
+    photo = models.ImageField(upload_to='photos/', blank=True, null=True)
+
+
 
     def __str__(self):
         return self.title
@@ -20,7 +24,7 @@ class Activity(models.Model):
     start_time = models.TimeField(null=True, blank=True)
     end_time = models.TimeField(null=True, blank=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True)
-
+    
     def __str__(self):
         return self.activity
     

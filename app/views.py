@@ -82,8 +82,6 @@ def delete_task(request, task_id):
     task.delete()
     return redirect('home')
 
-def hello_world(request):
-    return render(request, 'hello_world.html')
 
 def task_detail(request, task_id):
     try:

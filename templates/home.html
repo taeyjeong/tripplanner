@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -78,6 +79,8 @@
             document.getElementById('inviteModal' + taskId).classList.add('hidden');
         }
     </script>
+
+
 </head>
 
 <body class="mx-auto my-auto">
@@ -106,9 +109,11 @@
             
             {% if not tasks %}
             <div class="mt-8 mb-4 mx-6 my-auto" id="imageContainer">
-                <img src="https://via.placeholder.com/300x300" alt="Image 1" class="w-full h-auto object-cover">
+                <img src="{% static '13679332_1957480.jpg' %}" alt="home image" class="w-full h-auto object-cover">
             </div>
             {% endif %}
+
+            
 
         
             <!-- Task List -->
@@ -278,3 +283,36 @@
 </body>
 
 </html>
+
+
+
+<!-- Add photo feature pending to be used 
+
+
+<script>
+    function loadImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                document.getElementById('imageContainer').innerHTML = '<img src="' + e.target.result + '" alt="Uploaded Image" class="w-full h-auto object-cover">';
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+
+{% if not tasks %}
+            <div class="mt-8 mb-4 mx-6 my-auto" id="imageContainer">
+                {% if uploaded_image %}
+                    <img src="{{ uploaded_image }}" alt="Uploaded Image" class="w-full h-auto object-cover">
+                {% else %}
+                    <label for="imageUpload" class="cursor-pointer">
+                        <img src="https://via.placeholder.com/300x300" alt="Image 1" class="w-full h-auto object-cover">
+                        <p class="text-center text-gray-500 mt-2">Click to upload an image</p>
+                    </label>
+                    <input type="file" id="imageUpload" name="image" accept="image/*" style="display: none;" onchange="loadImage(this)">
+                {% endif %}
+            </div>
+        {% endif %} -->

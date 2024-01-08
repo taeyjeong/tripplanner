@@ -17,3 +17,4 @@ urlpatterns = [
     path('trip_options/<int:task_id>/', views.trip_options, name='trip_options'),
     path('invite_user/<int:task_id>/<str:username>/', views.invite_user, name='invite_user'),
 ]
+
