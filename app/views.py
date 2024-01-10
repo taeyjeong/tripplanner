@@ -10,6 +10,17 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.contrib import messages
 
+def WelcomePage(request):
+    if request.method == 'POST':
+        button_clicked = request.POST.get('button_clicked', '')
+
+        if button_clicked == 'create_account':
+            return redirect('signup')  # Redirect to the signup page
+
+        elif button_clicked == 'sign_in':
+            return redirect('login')  # Redirect to the login page
+
+    return render(request, 'welcome.html')
 
 def HomePage(request):
     user_tasks = Task.objects.filter(user=request.user)
@@ -20,33 +31,74 @@ def HomePage(request):
     return render(request, 'home.html', {'tasks': tasks})
 
 def SignupPage(request):
-    if request.method=='POST':
-        username=request.POST.get('username')
-        email=request.POST.get('email')
-        password1=request.POST.get('password1')
-        password2=request.POST.get('password2')
+    if request.method == 'POST':
+        first_name = request.POST.get('firstName')
+        last_name = request.POST.get('lastName')
+        phone_number = request.POST.get('phoneNumber')
+        email = request.POST.get('email')
 
-        if password1 != password2:
-            return HttpResponse("Your passwords dont match.")
-        else:
-            my_user= User.objects.create_user(username, email, password1)
-            my_user.save()
-            return redirect('login')
-        
+        # Store user information in the session
+        request.session['user_info'] = {
+            'email': email,
+            'first_name': first_name,
+            'last_name': last_name,
+        }
+
+        # Redirect to set_password view
+        return redirect('set_password')
+
     return render(request, 'signup.html')
+
+def setPassword(request):
+    if request.method == 'POST':
+        # Retrieve user information from the session
+        user_info = request.session.get('user_info', None)
+
+        if user_info:
+            email = user_info.get('email', '')
+            first_name = user_info.get('first_name', '')
+            last_name = user_info.get('last_name', '')
+            password = request.POST.get('password', '')
+            password2 = request.POST.get('password2', '')
+
+            if password != password2:
+                error_message = "Passwords do not match."
+                return render(request, 'set_password.html', {'error_message': error_message})
+
+            if not User.objects.filter(email=email).exists():
+                # Create a new user
+                user = User.objects.create_user(username=email, email=email, password=password)
+                user.first_name = first_name
+                user.last_name = last_name
+                user.save()
+
+                # Log in the user (optional)
+                login(request, user)
+
+                # Clear user information from the session
+                request.session.pop('user_info', None)
+
+                # Redirect to the set_password view
+                return redirect('login')
+            else:
+                # Handle the case when the user already exists
+                error_message = "User with this email already exists."
+                return render(request, 'set_password.html', {'error_message': error_message})
+
+    return render(request, 'set_password.html')
 
 
 def LoginPage(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password1 = request.POST.get('password')
-        user = authenticate(request, username=username, password=password1)
+        email = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=email, password=password)
         if user is not None:
             login(request, user)
             return redirect('home')
         else:
-            return redirect('signup')
-    
+            return redirect('signup')  
+ 
     return render(request, 'login.html')
 
 
