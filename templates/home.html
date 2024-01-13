@@ -116,7 +116,8 @@
             <div class="mx-3 my-auto rounded p-4 pl-4">
                 <strong class="text-lg font-normal">Upcoming Trips</strong>
                 <ul>
-                    {% for task in tasks %}
+                    {% for task in user_tasks %}
+                    
                     <li class="mt-2 mb-5 border grey rounded-md p-auto shadow-md p-3 pl-5">
                         <div class="text underline">
                             <a href="{% url 'task_detail' task.id %}"><strong>{{ task.title }}</strong></a><br>
@@ -129,7 +130,6 @@
                         Trip dates: {{ task.date_range }}<br>
                         {% endif %}
 
-                        <p>Task ID: {{ task.id }}, Task Title: {{ task.title }}</p>
                         <!-- Invite Button -->
                         <button type="button"
                             class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
@@ -199,6 +199,23 @@
                         </div>
 
                     </li>
+                    {% endfor %}
+                    <strong class="text-lg font-normal">Invited Trips</strong>
+                    {% for task in tasks %}
+                        {% if task not in user_tasks %}
+                        <li class="mt-2 mb-5 border grey rounded-md p-auto shadow-md p-3 pl-5">
+                            <div class="text underline">
+                                <a href="{% url 'task_detail' task.id %}"><strong>{{ task.title }}</strong></a><br>
+                            </div>
+                            {% if task.location %}
+                                Location: {{ task.location }}<br>
+                            {% endif %}
+                
+                            {% if task.date_range %}
+                                Trip dates: {{ task.date_range }}<br>
+                            {% endif %}
+                        </li>
+                        {% endif %}
                     {% endfor %}
                 </ul>
             </div>

@@ -28,12 +28,17 @@ def HomePage(request):
 
     tasks = Task.objects.filter(Q(id__in=user_tasks) | Q(id__in=invited_tasks))
 
-    return render(request, 'home.html', {'tasks': tasks})
+    context = {
+        'tasks': tasks,
+        'user_tasks': user_tasks,
+        'invited_tasks': invited_tasks,
+    }
+
+    return render(request, 'home.html', context)
 
 def SignupPage(request):
     if request.method == 'POST':
         first_name = request.POST.get('firstName')
-        last_name = request.POST.get('lastName')
         phone_number = request.POST.get('phoneNumber')
         email = request.POST.get('email')
 
@@ -41,7 +46,7 @@ def SignupPage(request):
         request.session['user_info'] = {
             'email': email,
             'first_name': first_name,
-            'last_name': last_name,
+            'phone_number' : phone_number
         }
 
         # Redirect to set_password view
@@ -57,7 +62,7 @@ def setPassword(request):
         if user_info:
             email = user_info.get('email', '')
             first_name = user_info.get('first_name', '')
-            last_name = user_info.get('last_name', '')
+            phone_number = user_info.get('phone_number', '')
             password = request.POST.get('password', '')
             password2 = request.POST.get('password2', '')
 
@@ -67,9 +72,8 @@ def setPassword(request):
 
             if not User.objects.filter(email=email).exists():
                 # Create a new user
-                user = User.objects.create_user(username=email, email=email, password=password)
+                user = User.objects.create_user(username=first_name, email=email, password=password)
                 user.first_name = first_name
-                user.last_name = last_name
                 user.save()
 
                 # Log in the user (optional)
@@ -83,16 +87,16 @@ def setPassword(request):
             else:
                 # Handle the case when the user already exists
                 error_message = "User with this email already exists."
-                return render(request, 'set_password.html', {'error_message': error_message})
+                return render(request, 'signup.html', {'error_message': error_message})
 
     return render(request, 'set_password.html')
 
 
 def LoginPage(request):
     if request.method == 'POST':
-        email = request.POST.get('username')
+        user_input = request.POST.get('username')
         password = request.POST.get('password')
-        user = authenticate(request, username=email, password=password)
+        user = authenticate(request, username=user_input, password=password)
         if user is not None:
             login(request, user)
             return redirect('home')
@@ -108,8 +112,13 @@ def LogoutPage(request):
 
 @login_required
 def task_list(request):
-    tasks = Task.objects.filter(user=request.user)
-    return render(request, 'task_list.html', {'tasks': tasks})
+ # Get tasks owned by the user
+    user_tasks = Task.objects.filter(user=request.user)
+
+    # Get tasks invited to the user
+    invited_tasks = Task.objects.filter(invited_users=request.user)
+
+    return render(request, 'task_list.html', {'user_tasks': user_tasks, 'invited_tasks': invited_tasks})
 
         
 def create_task(request):
